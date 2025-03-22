@@ -76,7 +76,6 @@ df['firstGenre'] = df['genres'].apply(extract_genre, index=0)
 df['secondGenre'] = df['genres'].apply(extract_genre, index=1)
 df['thirdGenre'] = df['genres'].apply(extract_genre, index=2)
 
-
 # Apply preprocess function
 df['words'] = df['description'].apply(preprocess)
 
