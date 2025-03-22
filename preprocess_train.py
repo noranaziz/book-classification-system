@@ -31,6 +31,9 @@ def preprocess(text):
     # 1. & 2. Remove extra blank spaces and convert to lowercase
     text = str(text).lower().strip()
 
+    # Ensure a space after each period (if it isn't already there)
+    text = re.sub(r'(?<=[^.])\.(?=\S)', '. ', text)
+
     # Remove punctuation
     text = re.sub(r'[^\w\s]', '', text)
     
@@ -48,14 +51,15 @@ def preprocess(text):
     
     return words
 
-# Function to extract primary/most relevant genre from 'genres' column
-def extract_genre(genre):
+# Function to extract genre from 'genres' column
+def extract_genre(genre, index):
     if pd.isna(genre) or genre.strip() == "":
         return None
     try:
         genre_list = ast.literal_eval(genre)
         if isinstance(genre_list, list) and genre_list:
-            return genre_list[0]
+            if 0 <= index < len(genre_list):
+                return genre_list[index]
     except (ValueError, SyntaxError):
         pass
     return None
@@ -68,7 +72,9 @@ df = df[columns]
 df = df.dropna(subset=["description"])
 
 # Apply genre function
-df['primaryGenre'] = df['genres'].apply(extract_genre)
+df['firstGenre'] = df['genres'].apply(extract_genre, index=0)
+df['secondGenre'] = df['genres'].apply(extract_genre, index=1)
+df['thirdGenre'] = df['genres'].apply(extract_genre, index=2)
 
 
 # Apply preprocess function
