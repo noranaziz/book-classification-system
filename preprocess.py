@@ -17,9 +17,11 @@ lemmatizer = WordNetLemmatizer()
 # Define stop words with nltk
 stop_words = set(stopwords.words('english'))
 
-# Load the training dataset
+# Load training datasets
 file_path = 'books_train.csv'
-df = pd.read_csv(file_path)
+df1 = pd.read_csv(file_path)
+file_path = 'book_summaries.csv'
+df2 = pd.read_csv(file_path)
 
 # Function to map NLTK POS tags to WordNet POS tags
 def get_wordnet_pos(nltk_tag):
@@ -51,7 +53,7 @@ def preprocess(text):
     
     return words
 
-# Function to extract genre from 'genres' column
+# Function for books_train.csv to extract genre from 'genres' column
 def extract_genre(genre, index):
     if pd.isna(genre) or genre.strip() == "":
         return None
@@ -66,24 +68,29 @@ def extract_genre(genre, index):
 
 # Keep only relevant columns (title, author, rating, description, language, genres, numRatings, coverImg)
 columns = ['title', 'author', 'rating', 'description', 'language', 'genres', 'numRatings', 'coverImg']
-df = df[columns]
+df1 = df1[columns]
 
 # Drop rows with missing descriptions
-df = df.dropna(subset=["description"])
+df1 = df1.dropna(subset=['description'])
+df2 = df2.dropna(subset=['Summary'])
 
 # Apply genre function
-df['firstGenre'] = df['genres'].apply(extract_genre, index=0)
-df['secondGenre'] = df['genres'].apply(extract_genre, index=1)
-df['thirdGenre'] = df['genres'].apply(extract_genre, index=2)
+df1['firstGenre'] = df1['genres'].apply(extract_genre, index=0)
+df1['secondGenre'] = df1['genres'].apply(extract_genre, index=1)
+df1['thirdGenre'] = df1['genres'].apply(extract_genre, index=2)
 
 # Apply preprocess function
-df['words'] = df['description'].apply(preprocess)
+df1['words'] = df1['description'].apply(preprocess)
+df2['words'] = df2['Summary'].apply(preprocess)
 
 # Keep only English books
-df = df[df['language'] == 'English']
+df1 = df1[df1['language'] == 'English']
 
 # Save the result to a new CSV file
-output_file = 'cleaned_books_train.csv'
-df.to_csv(output_file, index=False)
+output_file1 = 'cleaned_books_train.csv'
+df1.to_csv(output_file1, index=False)
+print("Processing complete. Cleaned data saved to:", output_file1)
 
-print("Processing complete. Cleaned data saved to:", output_file)
+output_file2 = 'cleaned_book_summaries.csv'
+df2.to_csv(output_file2, index=False)
+print("Processing complete. Cleaned data saved to:", output_file2)
