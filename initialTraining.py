@@ -12,48 +12,40 @@ import os
 # Suppress TensorFlow warnings
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
-# Load datasets
-df1 = pd.read_csv('cleaned_books_train.csv')
-df2 = pd.read_csv('cleaned_book_summaries.csv')
+# Load dataset
+df = pd.read_csv('cleaned_summaries.csv')
 
 # Split datasets into train (80%) and test (20%)
-train_df1, test_df1 = train_test_split(df1, test_size=0.2, random_state=42)
-train_df2, test_df2 = train_test_split(df2, test_size=0.2, random_state=42)
+train_df, test_df = train_test_split(df, test_size=0.2, random_state=42)
+
+# Remove genres from test dataset
+test_labels = test_df['Genres']
+test_df = test_df.drop(columns=['Genres'])
 
 # Save the new datasets
-train_df1.to_csv('train_data1.csv', index=False)
-test_df1.to_csv('test_data1.csv', index=False)
-train_df2.to_csv('train_data2.csv', index=False)
-test_df2.to_csv('test_data2.csv', index=False)
-
-'''
-# Load training and testing datasets
-train_data = pd.read_csv('cleaned_BBC_new.csv')  # Training dataset
-test_data = pd.read_csv('cleaned_test_new.csv')  # Test dataset
-
-# Load the test labels from test_labels.csv
-test_labels = pd.read_csv('test_labels.csv')  # Test labels for accuracy evaluation
+train_df.to_csv('train_data.csv', index=False)
+test_df.to_csv('test_data.csv', index=False)
+test_labels.to_csv("test_labels.csv", index=False)
 
 # Define feature and target columns
-X = train_data['words'] # Words column (full dataset)
-y = train_data['category'] # Target column (full dataset)
+X = train_df['words'] # Words column (full dataset)
+y = train_df['Genres'] # Target column (full dataset)
 
 # Encode target column 'y' to numeric labels using LabelEncoder
 label_encoder = LabelEncoder()
 y = label_encoder.fit_transform(y)
-y_test = label_encoder.transform(test_labels['category'])
-# print("label encoding order:", label_encoder.classes_) ['business' 'entertainment' 'politics' 'sport' 'tech']
-
+y_test = label_encoder.transform(test_labels)
+# print("label encoding order:", label_encoder.classes_)
 
 # Open a file to write the results
-with open('trainResults_new.txt', 'w') as f:
+with open('initTrainResults.txt', 'w') as f:
     try:
         # Define the feature and target columns
-        X_train = train_data['words']  # Text column (training set)
-        y_train = train_data['category']  # Target column (training set)
+        X_train = train_df['words']  # Text column (training set)
+        y_train = train_df['Genres']  # Target column (training set)
         
-        X_test = test_data['words']  # Text column (test set)
-        y_test = test_labels['category'] # True labels for the test set
+        X_test = test_df['words']  # Text column (test set)
+        y_test = test_labels # True labels for the test set
 
         # Encode the target column 'y' to numeric labels using LabelEncoder
         label_encoder = LabelEncoder()
@@ -121,5 +113,4 @@ with open('trainResults_new.txt', 'w') as f:
         # Save the scaler
         joblib.dump(scaler, 'scaler_new.pkl')
     except Exception as e:
-        f.write(f"An error occurred: {str(e)}\n")'
-'''
+        f.write(f"An error occurred: {str(e)}\n")
