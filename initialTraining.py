@@ -15,23 +15,27 @@ import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 # Load dataset
-df = pd.read_csv('cleaned_summaries.csv')
+df = pd.read_csv('cleaned_books_new.csv')
 
 # Split datasets into train (80%) and test (20%)
 train_df, test_df = train_test_split(df, test_size=0.2, random_state=42)
 
-# Remove genres from test dataset
-test_labels = test_df['Genres']
-test_df = test_df.drop(columns=['Genres'])
+# Obtain genre from test dataset
+test_labels = test_df['firstGenre']
+test_df = test_df.drop(columns=['firstGenre'])
+df = df.drop(columns=['genres'])
+
+print(train_df['firstGenre'].unique())
+print(train_df['firstGenre'].value_counts())
 
 # Save the new datasets
 train_df.to_csv('train_data.csv', index=False)
 test_df.to_csv('test_data.csv', index=False)
 test_labels.to_csv('test_labels.csv', index=False)
-
+'''
 # Define feature and target columns
 X_train = train_df['words']
-y_train = train_df['Genres']
+y_train = train_df['firstGenre']
 
 X_test = test_df['words']
 y_test = test_labels
@@ -87,7 +91,7 @@ with open('initTrainResults.txt', 'w') as f:
         # ------------------- SVM Model -------------------
         svm_model = SVC(kernel='linear')
         train_and_evaluate_model(svm_model, 'SVM')
-
+        
         # ------------------- Random Forest Model -------------------
         rf_model = RandomForestClassifier(n_estimators=300, random_state=42)
         train_and_evaluate_model(rf_model, 'Random Forest')
@@ -98,3 +102,4 @@ with open('initTrainResults.txt', 'w') as f:
 
     except Exception as e:
         f.write(f"An error occurred: {str(e)}\n")
+'''

@@ -68,15 +68,36 @@ def extract_genre(genre, index):
 columns = ['title', 'author', 'rating', 'description', 'language', 'genres', 'numRatings', 'coverImg']
 df = df[columns]
 
-# Drop rows with missing descriptions and genres
+# Drop rows with missing descriptions
 df = df.dropna(subset=['description'])
-df = df.dropna(subset=['genres'])
 
 # Apply genre function
 df['firstGenre'] = df['genres'].apply(extract_genre, index=0)
+df['secondGenre'] = df['genres'].apply(extract_genre, index=1)
+df['thirdGenre'] = df['genres'].apply(extract_genre, index=2)
 
 # Keep only English books
 df = df[df['language'] == 'English']
+
+# Count occurences of each genre
+threshold = 300
+genre_counts = df['firstGenre'].value_counts()
+
+# Function to assign final genre
+def assign_genre(row):
+    if row['firstGenre'] in genre_counts and genre_counts[row['firstGenre']] >= threshold and row['firstGenre'] != "Fiction":
+        return row['firstGenre']
+    elif row['secondGenre'] in genre_counts and genre_counts[row['secondGenre']] >= threshold and row['secondGenre'] != "Fiction":
+        return row['secondGenre']
+    elif row['thirdGenre'] in genre_counts and genre_counts[row['thirdGenre']] >= threshold and row['thirdGenre'] != "Fiction":
+        return row['thirdGenre']
+    return None
+
+# Assign genre based on above criteria
+df['genre'] = df.apply(assign_genre, axis=1)
+
+# Drop rows with missing genre
+df = df.dropna(subset=['genre'])
 
 # Apply preprocess function
 df['words'] = df['description'].apply(preprocess)
