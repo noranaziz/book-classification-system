@@ -2,9 +2,11 @@ import pandas as pd
 from sklearn.preprocessing import StandardScaler, LabelEncoder
 from sklearn.feature_extraction.text import TfidfVectorizer
 import xgboost as xgb
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score, classification_report
 from sklearn.model_selection import train_test_split
-from sklearn.svm import SVC
 import numpy as np
 import joblib
 import os
@@ -25,92 +27,74 @@ test_df = test_df.drop(columns=['Genres'])
 # Save the new datasets
 train_df.to_csv('train_data.csv', index=False)
 test_df.to_csv('test_data.csv', index=False)
-test_labels.to_csv("test_labels.csv", index=False)
+test_labels.to_csv('test_labels.csv', index=False)
 
 # Define feature and target columns
-X = train_df['words'] # Words column (full dataset)
-y = train_df['Genres'] # Target column (full dataset)
+X_train = train_df['words']
+y_train = train_df['Genres']
+
+X_test = test_df['words']
+y_test = test_labels
 
 # Encode target column 'y' to numeric labels using LabelEncoder
 label_encoder = LabelEncoder()
-y = label_encoder.fit_transform(y)
-y_test = label_encoder.transform(test_labels)
-# print("label encoding order:", label_encoder.classes_)
+y_train = label_encoder.fit_transform(y_train)
+y_test = label_encoder.transform(y_test)
+
+# Save the label encoder
+joblib.dump(label_encoder, 'label_encoder.pkl')
+
+# Convert the text data to numerical features using TF-IDF
+vectorizer = TfidfVectorizer(max_features=5000)
+X_train_tfidf = vectorizer.fit_transform(X_train)
+X_test_tfidf = vectorizer.transform(X_test)
+
+# Convert the training and test sets to dense arrays (for compatibility with models)
+X_train_tfidf = X_train_tfidf.toarray()
+X_test_tfidf = X_test_tfidf.toarray()
+
+# Normalize the data
+scaler = StandardScaler()
+X_train_tfidf = scaler.fit_transform(X_train_tfidf)
+X_test_tfidf = scaler.transform(X_test_tfidf)
+
+# Save the TF-IDF vectorizer and scaler
+joblib.dump(vectorizer, 'tfidf_vectorizer.pkl')
+joblib.dump(scaler, 'scaler.pkl')
 
 # Open a file to write the results
 with open('initTrainResults.txt', 'w') as f:
-    try:
-        # Define the feature and target columns
-        X_train = train_df['words']  # Text column (training set)
-        y_train = train_df['Genres']  # Target column (training set)
+    def train_and_evaluate_model(model, model_name):
+        model.fit(X_train_tfidf, y_train)
+        y_pred = model.predict(X_test_tfidf)
         
-        X_test = test_df['words']  # Text column (test set)
-        y_test = test_labels # True labels for the test set
+        accuracy = accuracy_score(y_test, y_pred)
+        f.write(f'{model_name} Accuracy: {accuracy * 100:.2f}%\n')
+        
+        # Print classification report
+        class_names = label_encoder.classes_
+        report = classification_report(y_test, y_pred, target_names=class_names)
+        f.write(f"\n{model_name} Classification Report:\n{report}\n")
 
-        # Encode the target column 'y' to numeric labels using LabelEncoder
-        label_encoder = LabelEncoder()
-        y_train = label_encoder.fit_transform(y_train)
-        y_test = label_encoder.transform(y_test)  # Ensure test labels are encoded similarly
+        # Save model
+        joblib.dump(model, f'{model_name.lower().replace(" ", "_")}_model.pkl')
 
-        # Log the unique labels in y_train and y_test to help with debugging
-        f.write(f"Unique classes in y_train: {np.unique(y_train)}\n")
-        f.write(f"Unique classes in y_test: {np.unique(y_test)}\n")
-
-        # Convert the text data to numerical features using TF-IDF
-        vectorizer = TfidfVectorizer(max_features=5000)
-        X_train_tfidf = vectorizer.fit_transform(X_train)
-        X_test_tfidf = vectorizer.transform(X_test)
-
-        # Convert the training and test sets to dense arrays (for compatibility with models)
-        X_train_tfidf = X_train_tfidf.toarray()
-        X_test_tfidf = X_test_tfidf.toarray()
-
-        # Normalize the data
-        scaler = StandardScaler()
-        X_train_tfidf = scaler.fit_transform(X_train_tfidf)
-        X_test_tfidf = scaler.transform(X_test_tfidf)
-
+    try:
         # ------------------- XGBoost Model -------------------
         xgb_model = xgb.XGBClassifier()
-        xgb_model.fit(X_train_tfidf, y_train)
-
-        # Make predictions on the test set
-        y_pred_xgb = xgb_model.predict(X_test_tfidf)
-
-        # Calculate accuracy of the predictions using test labels
-        accuracy_xgb = accuracy_score(y_test, y_pred_xgb)
-        f.write(f'XGBoost Model Accuracy: {accuracy_xgb * 100:.2f}%\n')
-        # Print classification report for XGBoost
-        class_names = label_encoder.classes_
-        xgb_report = classification_report(y_test, y_pred_xgb, target_names=class_names)
-        f.write(f"\nXGBoost Classification Report:\n{xgb_report}\n")
-
-        # Save XGBoost model
-        joblib.dump(xgb_model, 'xgb_model_new.pkl')
+        train_and_evaluate_model(xgb_model, 'XGBoost')
 
         # ------------------- SVM Model -------------------
-        # Linear kernel SVM
         svm_model = SVC(kernel='linear')
-        svm_model.fit(X_train_tfidf, y_train)
+        train_and_evaluate_model(svm_model, 'SVM')
 
-        # Make predictions with SVM
-        y_pred_svm = svm_model.predict(X_test_tfidf)
+        # ------------------- Random Forest Model -------------------
+        rf_model = RandomForestClassifier(n_estimators=300, random_state=42)
+        train_and_evaluate_model(rf_model, 'Random Forest')
 
-        # Calculate accuracy of the SVM model
-        accuracy_svm = accuracy_score(y_test, y_pred_svm)
-        f.write(f'SVM Model Accuracy: {accuracy_svm * 100:.2f}%\n')
+        # ------------------- Logistic Regression Model -------------------
+        lr_model = LogisticRegression(max_iter=1000)
+        train_and_evaluate_model(lr_model, 'Logistic Regression')
 
-        # Print classification report for SVM
-        svm_report = classification_report(y_test, y_pred_svm, target_names=class_names)
-        f.write(f"\nSVM Classification Report:\n{svm_report}\n")
-
-        # Save SVM model
-        joblib.dump(svm_model, 'svm_model_new.pkl')
-
-        # Save the TF-IDF vectorizer
-        joblib.dump(vectorizer, 'tfidf_vectorizer_new.pkl')
-
-        # Save the scaler
-        joblib.dump(scaler, 'scaler_new.pkl')
     except Exception as e:
         f.write(f"An error occurred: {str(e)}\n")

@@ -18,7 +18,7 @@ lemmatizer = WordNetLemmatizer()
 stop_words = set(stopwords.words('english'))
 
 # Load training datasets
-file_path = 'book_summaries.csv'
+file_path = 'books_new.csv'
 df = pd.read_csv(file_path)
 
 # Function to map NLTK POS tags to WordNet POS tags
@@ -51,8 +51,7 @@ def preprocess(text):
     
     return words
 
-'''
-# Function for books_train.csv to extract genre from 'genres' column
+# Function for books_new.csv to extract genre from 'genres' column
 def extract_genre(genre, index):
     if pd.isna(genre) or genre.strip() == "":
         return None
@@ -67,16 +66,22 @@ def extract_genre(genre, index):
 
 # Keep only relevant columns (title, author, rating, description, language, genres, numRatings, coverImg)
 columns = ['title', 'author', 'rating', 'description', 'language', 'genres', 'numRatings', 'coverImg']
-df1 = df1[columns]
-'''
+df = df[columns]
+
 # Drop rows with missing descriptions and genres
-df = df.dropna(subset=['Summary'])
-df = df.dropna(subset=['Genres'])
+df = df.dropna(subset=['description'])
+df = df.dropna(subset=['genres'])
+
+# Apply genre function
+df['firstGenre'] = df['genres'].apply(extract_genre, index=0)
+
+# Keep only English books
+df = df[df['language'] == 'English']
 
 # Apply preprocess function
-df['words'] = df['Summary'].apply(preprocess)
+df['words'] = df['description'].apply(preprocess)
 
 # Save the result to a new CSV file
-output_file = 'cleaned_summaries.csv'
+output_file = 'cleaned_books_new.csv'
 df.to_csv(output_file, index=False)
 print("Processing complete. Cleaned data saved to:", output_file)
