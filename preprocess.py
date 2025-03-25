@@ -80,16 +80,18 @@ df['thirdGenre'] = df['genres'].apply(extract_genre, index=2)
 df = df[df['language'] == 'English']
 
 # Count occurences of each genre
-threshold = 300
-genre_counts = df['firstGenre'].value_counts()
+threshold = 400
+genre_counts1 = df['firstGenre'].value_counts()
+genre_counts2 = df['secondGenre'].value_counts()
+genre_counts3 = df['thirdGenre'].value_counts()
 
 # Function to assign final genre
 def assign_genre(row):
-    if row['firstGenre'] in genre_counts and genre_counts[row['firstGenre']] >= threshold and row['firstGenre'] != "Fiction":
+    if row['firstGenre'] in genre_counts1 and genre_counts1[row['firstGenre']] >= threshold and row['firstGenre'] != "Fiction":
         return row['firstGenre']
-    elif row['secondGenre'] in genre_counts and genre_counts[row['secondGenre']] >= threshold and row['secondGenre'] != "Fiction":
+    elif row['secondGenre'] in genre_counts2 and genre_counts2[row['secondGenre']] >= threshold and row['secondGenre'] != "Fiction":
         return row['secondGenre']
-    elif row['thirdGenre'] in genre_counts and genre_counts[row['thirdGenre']] >= threshold and row['thirdGenre'] != "Fiction":
+    elif row['thirdGenre'] in genre_counts3 and genre_counts3[row['thirdGenre']] >= threshold and row['thirdGenre'] != "Fiction":
         return row['thirdGenre']
     return None
 

@@ -21,21 +21,21 @@ df = pd.read_csv('cleaned_books_new.csv')
 train_df, test_df = train_test_split(df, test_size=0.2, random_state=42)
 
 # Obtain genre from test dataset
-test_labels = test_df['firstGenre']
-test_df = test_df.drop(columns=['firstGenre'])
+test_labels = test_df['genre']
+test_df = test_df.drop(columns=['genre'])
 df = df.drop(columns=['genres'])
 
-print(train_df['firstGenre'].unique())
-print(train_df['firstGenre'].value_counts())
+print(train_df['genre'].unique())
+print(train_df['genre'].value_counts())
 
 # Save the new datasets
 train_df.to_csv('train_data.csv', index=False)
 test_df.to_csv('test_data.csv', index=False)
 test_labels.to_csv('test_labels.csv', index=False)
-'''
+
 # Define feature and target columns
 X_train = train_df['words']
-y_train = train_df['firstGenre']
+y_train = train_df['genre']
 
 X_test = test_df['words']
 y_test = test_labels
@@ -102,4 +102,3 @@ with open('initTrainResults.txt', 'w') as f:
 
     except Exception as e:
         f.write(f"An error occurred: {str(e)}\n")
-'''
