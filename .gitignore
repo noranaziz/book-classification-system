@@ -1,5 +1,4 @@
 books.csv
 cleaned_books.csv
-test_data.csv
 test_labels.csv
 *.pkl
