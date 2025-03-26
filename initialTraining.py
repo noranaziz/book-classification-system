@@ -98,18 +98,22 @@ with open('initTrainResults.txt', 'w') as f:
         # ------------------- XGBoost Model -------------------
         xgb_model = xgb.XGBClassifier()
         train_and_evaluate_model(xgb_model, 'XGBoost')
+        print("xgboost trained")
 
         # ------------------- SVM Model -------------------
         svm_model = SVC(kernel='linear')
         train_and_evaluate_model(svm_model, 'SVM')
-        '''
+        print('svm trained')
+        
         # ------------------- Random Forest Model -------------------
         rf_model = RandomForestClassifier(n_estimators=300, random_state=42)
         train_and_evaluate_model(rf_model, 'Random Forest')
-
+        print('random forest trained')
+        
         # ------------------- Logistic Regression Model -------------------
         lr_model = LogisticRegression(max_iter=1000)
-        train_and_evaluate_model(lr_model, 'Logistic Regression')'''
+        train_and_evaluate_model(lr_model, 'Logistic Regression')
+        print('logistic regression trained')
 
     except Exception as e:
         f.write(f"An error occurred: {str(e)}\n")
