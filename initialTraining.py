@@ -43,7 +43,7 @@ print(train_df['genre'].value_counts())
 train_df.to_csv('train_data.csv', index=False)
 test_df.to_csv('test_data.csv', index=False)
 test_labels.to_csv('test_labels.csv', index=False)
-'''
+
 # Define feature and target columns
 X_train = train_df['words']
 y_train = train_df['genre']
@@ -102,14 +102,14 @@ with open('initTrainResults.txt', 'w') as f:
         # ------------------- SVM Model -------------------
         svm_model = SVC(kernel='linear')
         train_and_evaluate_model(svm_model, 'SVM')
-        
+        '''
         # ------------------- Random Forest Model -------------------
         rf_model = RandomForestClassifier(n_estimators=300, random_state=42)
         train_and_evaluate_model(rf_model, 'Random Forest')
 
         # ------------------- Logistic Regression Model -------------------
         lr_model = LogisticRegression(max_iter=1000)
-        train_and_evaluate_model(lr_model, 'Logistic Regression')
+        train_and_evaluate_model(lr_model, 'Logistic Regression')'''
 
     except Exception as e:
-        f.write(f"An error occurred: {str(e)}\n")'''
+        f.write(f"An error occurred: {str(e)}\n")

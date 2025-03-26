@@ -1,0 +1,40 @@
+XGBoost Accuracy: 66.77%
+
+XGBoost Classification Report:
+                    precision    recall  f1-score   support
+
+         Childrens       0.71      0.46      0.56       217
+          Classics       0.60      0.50      0.55       333
+           Fantasy       0.68      0.76      0.72      1088
+Historical Fiction       0.62      0.58      0.60       595
+           Mystery       0.68      0.63      0.65       462
+        Nonfiction       0.75      0.84      0.79       953
+        Paranormal       0.62      0.47      0.53       230
+           Romance       0.68      0.73      0.70       910
+   Science Fiction       0.75      0.59      0.66       341
+       Young Adult       0.54      0.56      0.55       719
+
+          accuracy                           0.67      5848
+         macro avg       0.66      0.61      0.63      5848
+      weighted avg       0.67      0.67      0.66      5848
+
+SVM Accuracy: 64.91%
+
+SVM Classification Report:
+                    precision    recall  f1-score   support
+
+         Childrens       0.61      0.59      0.60       217
+          Classics       0.45      0.60      0.52       333
+           Fantasy       0.65      0.72      0.68      1088
+Historical Fiction       0.57      0.62      0.59       595
+           Mystery       0.65      0.63      0.64       462
+        Nonfiction       0.81      0.77      0.79       953
+        Paranormal       0.54      0.47      0.50       230
+           Romance       0.72      0.69      0.70       910
+   Science Fiction       0.70      0.58      0.64       341
+       Young Adult       0.57      0.50      0.53       719
+
+          accuracy                           0.65      5848
+         macro avg       0.63      0.62      0.62      5848
+      weighted avg       0.65      0.65      0.65      5848
+
