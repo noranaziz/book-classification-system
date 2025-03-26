@@ -15,16 +15,16 @@ import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 # Load dataset
-df = pd.read_csv('cleaned_books_new.csv')
+df = pd.read_csv('cleaned_books.csv')
 
 # Set threshold per genre
-threshold = 1000
+threshold = 1500
 
 # Count genre occurrences
 genre_counts = df['genre'].value_counts()
 print(genre_counts)
 
-# Keep top 10 genres
+# Keep top 8 genres
 valid_genres = genre_counts[genre_counts >= threshold].index
 df = df[df['genre'].isin(valid_genres)]
 
