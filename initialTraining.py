@@ -137,16 +137,16 @@ with open('initTrainResults.txt', 'w') as f:
         mlp_model = MLPClassifier(hidden_layer_sizes=(128, 64), max_iter=300, random_state=42)
         train_and_evaluate_model(mlp_model, 'MLP Neural Net')
         print('mlp neural net trained')
-        '''
-        # ------------------- Ensemble (Voting Classifier) -------------------
+        
+        # ------------------- Ensemble (Voting Classifier - MLP + XGBoost + Logistic Regression) -------------------
         ensemble_model = VotingClassifier(estimators=[
-            ('xgb', xgb.XGBClassifier(use_label_encoder=False, eval_metric='mlogloss')),
-            ('svm', SVC(kernel='linear', probability=True)),
-            ('lr', LogisticRegression(max_iter=1000))
+            ('mlp', mlp_model),
+            ('xgb', xgb_model),
+            ('lr', lr_model)
         ], voting='soft')  # soft = use predicted probabilities
 
-        train_and_evaluate_model(ensemble_model, 'Voting Ensemble')
-        print('ensemble model trained')'''
+        train_and_evaluate_model(ensemble_model, 'Voting Ensemble (MLP + XGB + LR)')
+        print('voting ensemble (MLP + XGB + LR) trained')
 
     except Exception as e:
         f.write(f"An error occurred: {str(e)}\n")
