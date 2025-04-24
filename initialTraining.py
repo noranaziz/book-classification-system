@@ -5,6 +5,10 @@ import xgboost as xgb
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.svm import SVC
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.ensemble import VotingClassifier
+from sklearn.neural_network import MLPClassifier
 from sklearn.metrics import accuracy_score, classification_report
 from sklearn.model_selection import train_test_split
 import numpy as np
@@ -114,6 +118,40 @@ with open('initTrainResults.txt', 'w') as f:
         lr_model = LogisticRegression(max_iter=1000)
         train_and_evaluate_model(lr_model, 'Logistic Regression')
         print('logistic regression trained')
+
+        # ------------------- Naive Bayes -------------------
+        nb_model = MultinomialNB()
+        nb_model.fit(vectorizer.transform(X_train), y_train)
+        y_pred_nb = nb_model.predict(vectorizer.transform(X_test))
+        accuracy = accuracy_score(y_test, y_pred_nb)
+        f.write(f'Naive Bayes Accuracy: {accuracy * 100:.2f}%\n')
+        # Classification report
+        class_names = label_encoder.classes_
+        report = classification_report(y_test, y_pred_nb, target_names=class_names)
+        f.write(f"\nNaive Bayes Classification Report:\n{report}\n")
+        # Save model
+        joblib.dump(nb_model, 'naive_bayes_model.pkl')
+        print('naive bayes trained')
+
+        # ------------------- K-Nearest Neighbors -------------------
+        knn_model = KNeighborsClassifier(n_neighbors=5)
+        train_and_evaluate_model(knn_model, 'K-Nearest Neighbors')
+        print('knn trained')
+        
+        # ------------------- MLP Neural Network -------------------
+        mlp_model = MLPClassifier(hidden_layer_sizes=(128, 64), max_iter=300, random_state=42)
+        train_and_evaluate_model(mlp_model, 'MLP Neural Net')
+        print('mlp neural net trained')
+        '''
+        # ------------------- Ensemble (Voting Classifier) -------------------
+        ensemble_model = VotingClassifier(estimators=[
+            ('xgb', xgb.XGBClassifier(use_label_encoder=False, eval_metric='mlogloss')),
+            ('svm', SVC(kernel='linear', probability=True)),
+            ('lr', LogisticRegression(max_iter=1000))
+        ], voting='soft')  # soft = use predicted probabilities
+
+        train_and_evaluate_model(ensemble_model, 'Voting Ensemble')
+        print('ensemble model trained')'''
 
     except Exception as e:
         f.write(f"An error occurred: {str(e)}\n")
