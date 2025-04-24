@@ -132,11 +132,6 @@ with open('initTrainResults.txt', 'w') as f:
         # Save model
         joblib.dump(nb_model, 'naive_bayes_model.pkl')
         print('naive bayes trained')
-
-        # ------------------- K-Nearest Neighbors -------------------
-        knn_model = KNeighborsClassifier(n_neighbors=5)
-        train_and_evaluate_model(knn_model, 'K-Nearest Neighbors')
-        print('knn trained')
         
         # ------------------- MLP Neural Network -------------------
         mlp_model = MLPClassifier(hidden_layer_sizes=(128, 64), max_iter=300, random_state=42)
