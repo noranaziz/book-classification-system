@@ -29,6 +29,8 @@ train2, train3 = train_test_split(temp, test_size=0.5, random_state=42, stratify
 # remove labels from train3 to simulate unlabeled data
 train3_unlabeled = train3.drop(columns='genre')
 
+print('step 1 (partition dataset) completed!\n')
+
 
 
 # ---------- STEP 2: INITIAL TRAINING ----------
@@ -82,6 +84,8 @@ y_pred_agent1 = agent_1.predict(X_test)
 # agent 2 (MLP)
 y_pred_agent2 = agent_2.predict(X_test)
 
+print('step 2 (initial training) completed!\n')
+
 
 
 # ---------- STEP 3: MUTUAL LEARNING ----------
@@ -122,7 +126,6 @@ for i in range(len(train3_unlabeled)):
 # add the new labels to train3
 train3_relabelled = train3_unlabeled.copy()
 train3_relabelled['genre'] = label_encoder.inverse_transform(new_labels)
-print('relabeling of train3 is complete')
 
 # 3. combine training data
 # train1 + train3
@@ -150,6 +153,56 @@ agent_2.fit(X_train2_combined, y_train2_combined)
 y_pred_agent1_retrained = agent_1.predict(X_test)
 y_pred_agent2_retrained = agent_2.predict(X_test)
 
+print('step 3 (mutual learning) completed!\n')
+
 
 
 # ---------- STEP 4: RESULTS + VISUALIZATIONS ----------
+# create graphs to clearly see results!
+# confusion matrix visualized as heatmap
+# save classification reports to text files
+
+# function for heatmaps/confusion matrices
+# cm: confusion matrix
+# agent: name of agent (XGBoost or MLP)
+# phase: phase of mutual learning (before or after)
+# labels: list of category labels
+def plot_confusion_matrix(cm, agent, phase, labels):
+    plt.figure(figsize=(8, 6))
+    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=labels, yticklabels=labels, cbar=False)
+    plt.title(f'{agent} - {phase} Mutual Learning\nConfusion Matrix')
+    plt.xlabel('Predicted')
+    plt.ylabel('True')
+    plt.show()
+
+def save_results(agent, acc, report, path):
+    with open(path, 'a') as file:
+        file.write(f"### {agent} Evaluation ###\n")
+        file.write(f"Accuracy: {acc:.2f}%\n")
+        file.write(report)
+        file.write("\n" + "-"*50 + "\n")
+
+file_path = 'evaluation_results.txt'
+
+acc1 = accuracy_score(y_test, y_pred_agent1) * 100
+report1 = classification_report(y_test, y_pred_agent1, target_names=label_encoder.classes_)
+save_results("Agent 1 (XGB) Before", acc1, report1, file_path)
+
+acc2 = accuracy_score(y_test, y_pred_agent2) * 100
+report2 = classification_report(y_test, y_pred_agent2, target_names=label_encoder.classes_)
+save_results("Agent 2 (MLP) Before", acc2, report2, file_path)
+
+acc1_re = accuracy_score(y_test, y_pred_agent1_retrained) * 100
+report1_re = classification_report(y_test, y_pred_agent1_retrained, target_names=label_encoder.classes_)
+save_results("Agent 1 (XGB) After", acc1_re, report1_re, file_path)
+
+acc2_re = accuracy_score(y_test, y_pred_agent2_retrained) * 100
+report2_re = classification_report(y_test, y_pred_agent2_retrained, target_names=label_encoder.classes_)
+save_results("Agent 2 (MLP) After", acc2_re, report2_re, file_path)
+
+plot_confusion_matrix(confusion_matrix(y_test, y_pred_agent1), 'Agent 1 (XGB)', 'Before', label_encoder.classes_)
+plot_confusion_matrix(confusion_matrix(y_test, y_pred_agent2), 'Agent 2 (MLP)', 'Before', label_encoder.classes_)
+plot_confusion_matrix(confusion_matrix(y_test, y_pred_agent1_retrained), 'Agent 1 (XGB)', 'After', label_encoder.classes_)
+plot_confusion_matrix(confusion_matrix(y_test, y_pred_agent2_retrained), 'Agent 2 (MLP)', 'After', label_encoder.classes_)
+
+print(f"Evaluation results saved to {file_path}")
