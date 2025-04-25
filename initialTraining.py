@@ -129,8 +129,6 @@ with open('initTrainResults.txt', 'w') as f:
         class_names = label_encoder.classes_
         report = classification_report(y_test, y_pred_nb, target_names=class_names)
         f.write(f"\nNaive Bayes Classification Report:\n{report}\n")
-        # Save model
-        joblib.dump(nb_model, 'naive_bayes_model.pkl')
         print('naive bayes trained')
         
         # ------------------- MLP Neural Network -------------------
