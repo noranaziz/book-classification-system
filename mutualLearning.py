@@ -97,3 +97,59 @@ y_pred_agent2 = agent_2.predict(X_test)
 ### train1 + train3
 ### train2 + train3
 # 4. both agents are retrained w/ their respective combined datasets
+
+# 1. prediction phase
+# predict labels + posterior probabilities for train3 using both agents
+train3_features = vectorizer.transform(train3_unlabeled['words']).toarray()
+train3_features = scaler.transform(train3_features)
+agent1_probs = agent_1.predict_proba(train3_features)
+agent2_probs = agent_2.predict_proba(train3_features)
+
+# get predictions + confidence scores
+agent1_preds = agent_1.predict(train3_features)
+agent2_preds = agent_2.predict(train3_features)
+agent1_confidences = np.max(agent1_probs, axis=1)
+agent2_confidences = np.max(agent2_probs, axis=1)
+
+# 2. relabeling phase
+new_labels = []
+for i in range(len(train3_unlabeled)):
+    if agent1_confidences[i] > agent2_confidences[i]:
+        new_labels.append(agent1_preds[i])  # use agent 1's prediction
+    else:
+        new_labels.append(agent2_preds[i])  # use agent 2's prediction
+
+# add the new labels to train3
+train3_relabelled = train3_unlabeled.copy()
+train3_relabelled['genre'] = label_encoder.inverse_transform(new_labels)
+print('relabeling of train3 is complete')
+
+# 3. combine training data
+# train1 + train3
+train1_combined = pd.concat([train1, train3_relabelled], axis=0)
+# train2 + train3
+train2_combined = pd.concat([train2, train3_relabelled], axis=0)
+
+# 4. retrain agents
+# extract features + labels for combined datasets
+X_train1_combined = vectorizer.transform(train1_combined['words']).toarray()
+y_train1_combined = label_encoder.transform(train1_combined['genre'])
+X_train2_combined = vectorizer.transform(train2_combined['words']).toarray()
+y_train2_combined = label_encoder.transform(train2_combined['genre'])
+
+# scale the combined training features
+X_train1_combined = scaler.fit_transform(X_train1_combined)
+X_train2_combined = scaler.transform(X_train2_combined)
+
+# retrain agent 1 (XGBoost)
+agent_1.fit(X_train1_combined, y_train1_combined)
+# retrain agent 2 (MLP)
+agent_2.fit(X_train2_combined, y_train2_combined)
+
+# evaluate retrained agents
+y_pred_agent1_retrained = agent_1.predict(X_test)
+y_pred_agent2_retrained = agent_2.predict(X_test)
+
+
+
+# ---------- STEP 4: RESULTS + VISUALIZATIONS ----------
