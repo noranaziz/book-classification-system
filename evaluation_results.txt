@@ -376,3 +376,105 @@ Historical Fiction       0.61      0.60      0.61       559
       weighted avg       0.72      0.72      0.72      5391
 
 --------------------------------------------------
+### Agent 1 (XGB) Before Evaluation ###
+Accuracy: 68.93%
+                    precision    recall  f1-score   support
+
+           Fantasy       0.69      0.73      0.71      1114
+Historical Fiction       0.63      0.58      0.60       606
+           Mystery       0.71      0.66      0.68       461
+        Nonfiction       0.77      0.84      0.80       916
+           Romance       0.69      0.72      0.71       931
+   Science Fiction       0.78      0.55      0.64       357
+       Young Adult       0.57      0.58      0.58       732
+
+          accuracy                           0.69      5117
+         macro avg       0.69      0.67      0.68      5117
+      weighted avg       0.69      0.69      0.69      5117
+
+--------------------------------------------------
+### Agent 2 (MLP) Before Evaluation ###
+Accuracy: 69.87%
+                    precision    recall  f1-score   support
+
+           Fantasy       0.72      0.73      0.72      1114
+Historical Fiction       0.62      0.66      0.64       606
+           Mystery       0.68      0.64      0.66       461
+        Nonfiction       0.80      0.85      0.82       916
+           Romance       0.72      0.74      0.73       931
+   Science Fiction       0.70      0.55      0.62       357
+       Young Adult       0.59      0.56      0.57       732
+
+          accuracy                           0.70      5117
+         macro avg       0.69      0.68      0.68      5117
+      weighted avg       0.70      0.70      0.70      5117
+
+--------------------------------------------------
+### Agent 1 (XGB) After Evaluation ###
+Accuracy: 70.53%
+                    precision    recall  f1-score   support
+
+           Fantasy       0.71      0.75      0.73      1114
+Historical Fiction       0.64      0.63      0.63       606
+           Mystery       0.74      0.66      0.70       461
+        Nonfiction       0.80      0.87      0.83       916
+           Romance       0.70      0.74      0.72       931
+   Science Fiction       0.79      0.53      0.64       357
+       Young Adult       0.59      0.56      0.57       732
+
+          accuracy                           0.71      5117
+         macro avg       0.71      0.68      0.69      5117
+      weighted avg       0.71      0.71      0.70      5117
+
+--------------------------------------------------
+### Agent 2 (MLP) After Evaluation ###
+Accuracy: 71.02%
+                    precision    recall  f1-score   support
+
+           Fantasy       0.73      0.75      0.74      1114
+Historical Fiction       0.62      0.67      0.64       606
+           Mystery       0.72      0.66      0.69       461
+        Nonfiction       0.82      0.85      0.83       916
+           Romance       0.71      0.75      0.73       931
+   Science Fiction       0.74      0.55      0.63       357
+       Young Adult       0.60      0.57      0.59       732
+
+          accuracy                           0.71      5117
+         macro avg       0.70      0.69      0.69      5117
+      weighted avg       0.71      0.71      0.71      5117
+
+--------------------------------------------------
+### Ensemble (XGB + MLP) After Mutual Learning Evaluation ###
+Accuracy: 73.42%
+                    precision    recall  f1-score   support
+
+           Fantasy       0.75      0.77      0.76      1114
+Historical Fiction       0.65      0.69      0.67       606
+           Mystery       0.73      0.67      0.70       461
+        Nonfiction       0.83      0.87      0.85       916
+           Romance       0.74      0.78      0.76       931
+   Science Fiction       0.77      0.59      0.67       357
+       Young Adult       0.64      0.60      0.62       732
+
+          accuracy                           0.73      5117
+         macro avg       0.73      0.71      0.72      5117
+      weighted avg       0.73      0.73      0.73      5117
+
+--------------------------------------------------
+### Best Weighted Ensemble (XGB 0.70 + MLP 0.30) Evaluation ###
+Accuracy: 74.73%
+                    precision    recall  f1-score   support
+
+           Fantasy       0.75      0.79      0.77      1114
+Historical Fiction       0.67      0.69      0.68       606
+           Mystery       0.77      0.70      0.73       461
+        Nonfiction       0.83      0.89      0.86       916
+           Romance       0.75      0.79      0.77       931
+   Science Fiction       0.84      0.60      0.70       357
+       Young Adult       0.65      0.61      0.63       732
+
+          accuracy                           0.75      5117
+         macro avg       0.75      0.72      0.73      5117
+      weighted avg       0.75      0.75      0.75      5117
+
+--------------------------------------------------
