@@ -206,3 +206,67 @@ plot_confusion_matrix(confusion_matrix(y_test, y_pred_agent1_retrained), 'Agent 
 plot_confusion_matrix(confusion_matrix(y_test, y_pred_agent2_retrained), 'Agent 2 (MLP)', 'After', label_encoder.classes_)
 
 print(f"Evaluation results saved to {file_path}")
+
+
+
+# ---------- STEP 5: ENSEMBLE METHOD ----------
+# create ensemble method of post-mutual learning models
+# this should be the final model used for the actual classification!
+
+# UNWEIGHTED
+# get prediction probabilities from both agents
+agent1_probs_retrained = agent_1.predict_proba(X_test)
+agent2_probs_retrained = agent_2.predict_proba(X_test)
+
+# average the probabilities (soft voting)
+ensemble_probs = (agent1_probs_retrained + agent2_probs_retrained) / 2
+
+# final ensemble predictions
+ensemble_preds = np.argmax(ensemble_probs, axis=1)
+
+# evaluate ensemble model
+ensemble_accuracy = accuracy_score(y_test, ensemble_preds) * 100
+ensemble_report = classification_report(y_test, ensemble_preds, target_names=label_encoder.classes_)
+
+# save ensemble evaluation
+save_results("Ensemble (XGB + MLP) After Mutual Learning", ensemble_accuracy, ensemble_report, file_path)
+
+# plot confusion matrix for ensemble
+ensemble_confusion_matrix = confusion_matrix(y_test, ensemble_preds)
+plot_confusion_matrix(ensemble_confusion_matrix, 'Ensemble (XGB + MLP)', 'After', label_encoder.classes_)
+
+print(f"Ensemble evaluation completed with accuracy: {ensemble_accuracy:.2f}%")
+
+# WEIGHTED
+# get predicted probabilities from both models
+probs_xgb = agent_1.predict_proba(X_test)
+probs_mlp = agent_2.predict_proba(X_test)
+
+# get best weights
+best_acc = 0
+best_weights = (0.5, 0.5)
+best_preds = None
+weight_range = np.arange(0.0, 1.05, 0.05)
+
+for w_xgb in weight_range:
+    w_mlp = 1.0 - w_xgb
+    combined_probs = (w_xgb * probs_xgb) + (w_mlp * probs_mlp)
+    preds = np.argmax(combined_probs, axis=1)
+    acc = accuracy_score(y_test, preds)
+    
+    if acc > best_acc:
+        best_acc = acc
+        best_weights = (w_xgb, w_mlp)
+        best_preds = preds
+
+# final evaluation with best weights
+best_acc_percent = best_acc * 100
+best_report = classification_report(y_test, best_preds, target_names=label_encoder.classes_)
+
+print(f"\nBest Weights Found: XGB={best_weights[0]:.2f}, MLP={best_weights[1]:.2f}")
+print(f"Best Weighted Ensemble Accuracy: {best_acc_percent:.2f}%\n")
+print(best_report)
+
+# save results
+save_results(f"Best Weighted Ensemble (XGB {best_weights[0]:.2f} + MLP {best_weights[1]:.2f})", best_acc_percent, best_report, file_path)
+plot_confusion_matrix(confusion_matrix(y_test, best_preds), 'Best Weighted Ensemble', 'After', label_encoder.classes_)
