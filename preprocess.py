@@ -87,11 +87,11 @@ genre_counts3 = df['thirdGenre'].value_counts()
 
 # Function to assign final genre (exclude fiction and classics)
 def assign_genre(row):
-    if row['firstGenre'] in genre_counts1 and genre_counts1[row['firstGenre']] >= threshold and row['firstGenre'] != "Fiction" and row['firstGenre'] != "Classics":
+    if row['firstGenre'] in genre_counts1 and genre_counts1[row['firstGenre']] >= threshold and row['firstGenre'] != "Fiction" and row['firstGenre'] != "Classics" and row['firstGenre'] != "Young Adult":
         return row['firstGenre']
-    elif row['secondGenre'] in genre_counts2 and genre_counts2[row['secondGenre']] >= threshold and row['secondGenre'] != "Fiction" and row['secondGenre'] != "Classics":
+    elif row['secondGenre'] in genre_counts2 and genre_counts2[row['secondGenre']] >= threshold and row['secondGenre'] != "Fiction" and row['secondGenre'] != "Classics" and row['secondGenre'] != "Young Adult":
         return row['secondGenre']
-    elif row['thirdGenre'] in genre_counts3 and genre_counts3[row['thirdGenre']] >= threshold and row['thirdGenre'] != "Fiction" and row['thirdGenre'] != "Classics":
+    elif row['thirdGenre'] in genre_counts3 and genre_counts3[row['thirdGenre']] >= threshold and row['thirdGenre'] != "Fiction" and row['thirdGenre'] != "Classics" and row['thirdGenre'] != "Young Adult":
         return row['thirdGenre']
     return None
 

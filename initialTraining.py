@@ -22,13 +22,13 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 df = pd.read_csv('cleaned_books.csv')
 
 # Set threshold per genre
-threshold = 1500
+threshold = 2000
 
 # Count genre occurrences
 genre_counts = df['genre'].value_counts()
 print(genre_counts)
 
-# Keep top 7 genres
+# Keep top 6 genres
 valid_genres = genre_counts[genre_counts >= threshold].index
 df = df[df['genre'].isin(valid_genres)]
 
@@ -80,7 +80,7 @@ X_test_tfidf = scaler.transform(X_test_tfidf)
 # Save the TF-IDF vectorizer and scaler
 joblib.dump(vectorizer, 'tfidf_vectorizer.pkl')
 joblib.dump(scaler, 'scaler.pkl')
-
+'''
 # Open a file to write the results
 with open('initTrainResults.txt', 'w') as f:
     def train_and_evaluate_model(model, model_name):
@@ -147,4 +147,4 @@ with open('initTrainResults.txt', 'w') as f:
         print('voting ensemble (MLP + XGB + LR) trained')
 
     except Exception as e:
-        f.write(f"An error occurred: {str(e)}\n")
+        f.write(f"An error occurred: {str(e)}\n")'''
