@@ -85,7 +85,7 @@ genre_counts1 = df['firstGenre'].value_counts()
 genre_counts2 = df['secondGenre'].value_counts()
 genre_counts3 = df['thirdGenre'].value_counts()
 
-# Function to assign final genre
+# Function to assign final genre (exclude fiction and classics)
 def assign_genre(row):
     if row['firstGenre'] in genre_counts1 and genre_counts1[row['firstGenre']] >= threshold and row['firstGenre'] != "Fiction" and row['firstGenre'] != "Classics":
         return row['firstGenre']
