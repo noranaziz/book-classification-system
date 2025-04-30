@@ -28,7 +28,7 @@ threshold = 1500
 genre_counts = df['genre'].value_counts()
 print(genre_counts)
 
-# Keep top 8 genres
+# Keep top 7 genres
 valid_genres = genre_counts[genre_counts >= threshold].index
 df = df[df['genre'].isin(valid_genres)]
 
