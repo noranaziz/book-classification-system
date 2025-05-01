@@ -270,3 +270,11 @@ print(best_report)
 # save results
 save_results(f"Best Weighted Ensemble (XGB {best_weights[0]:.2f} + MLP {best_weights[1]:.2f})", best_acc_percent, best_report, file_path)
 plot_confusion_matrix(confusion_matrix(y_test, best_preds), 'Best Weighted Ensemble', 'After', label_encoder.classes_)
+
+# save predictions to ensemble_predictions.csv
+# add predictions back to test_data with decoded labels
+decoded_preds = label_encoder.inverse_transform(best_preds)
+test_data_with_preds = test_data.copy()
+test_data_with_preds['genre'] = decoded_preds
+test_data_with_preds.to_csv('ensemble_predictions.csv', index=False)
+print("Saved ensemble predictions to ensemble_predictions.csv")
